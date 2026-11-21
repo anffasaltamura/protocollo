@@ -138,7 +138,7 @@ async function stamp(file,r){const w=pre();try{await stamp0(file,r,w)}catch(e){i
 async function stamp0(file,r,w){
   const {PDFDocument,StandardFonts,rgb,degrees}=PDFLib;
   const doc=await PDFDocument.load(await file.arrayBuffer(),{ignoreEncryption:true});
-  const font=await doc.embedFont(StandardFonts.HelveticaOblique);
+  const font=await doc.embedFont(StandardFonts.Helvetica);
   const pgs=doc.getPages(),N=pgs.length,blue=rgb(0.1,0.25,0.8);
   const ente=(r.ente??$("fEnte").value).trim();
   const wa=s=>s.toUpperCase().replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[\u2013\u2014]/g,"-").replace(/[^\x20-\x7E\xA0-\xFF]/g,"?");
@@ -146,12 +146,12 @@ async function stamp0(file,r,w){
   const cb=pg.getCropBox(),R=((pg.getRotation().angle%360)+360)%360,height=R%180?cb.width:cb.height,width=R%180?cb.height:cb.width;
   const mp=(xd,yd)=>R===0?[cb.x+xd,cb.y+yd]:R===90?[cb.x+cb.width-yd,cb.y+xd]:R===180?[cb.x+cb.width-xd,cb.y+cb.height-yd]:[cb.x+yd,cb.y+cb.height-xd];
   const txt=wa((r.d==="E"?"ENTRATA":"USCITA")+" - PROT. N. "+label(r)+" DEL "+fmtD(r.data)+" - PAG. "+(i+1)+" DI "+N+" - ALLEGATI: "+(r.all||0)+(ente?" - "+ente:""));
-  let sz=6,tw=font.widthOfTextAtSize(txt,sz);
-  const maxW=width-36;
+  let sz=8,tw=font.widthOfTextAtSize(txt,sz);
+  const maxW=height-36;
   if(tw>maxW){sz=sz*maxW/tw;tw=maxW}
   const m=18;
   
-  const [tx,ty]=mp(width-m-tw,height-m-sz*0.72);pg.drawText(txt,{x:tx,y:ty,size:sz,font,rotate:degrees(R),color:blue});
+  const [tx,ty]=mp(width-6-sz*0.72,height-m);pg.drawText(txt,{x:tx,y:ty,size:sz,font,rotate:degrees(R-90),color:blue});
   });
   const bytes=await doc.save();
   const a=document.createElement("a");
